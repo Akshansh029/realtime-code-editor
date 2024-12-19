@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import Logo from "../components/Logo";
+import { v4 as uuidV4 } from "uuid";
 
 const Home = () => {
+  const [roomId, setRoomId] = useState("");
+  const [username, setUsername] = useState("");
+
+  const createNewRoom = (e) => {
+    e.preventDefault();
+    const id = uuidV4();
+    setRoomId(id);
+  };
+
+  const joinRoom = () => {
+    // console.log(roomId);
+    // console.log(username);
+  };
+
   return (
     <div className="flex items-center justify-center text-white h-[100vh] ">
       <div className="bg-formBg p-5 rounded-xl w-[400px] max-w-[50%]">
@@ -13,6 +28,8 @@ const Home = () => {
             name=""
             id=""
             placeholder="Room ID"
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value)}
             className="p-2 rounded-md outline-none border-none mb-3 text-sm bg-[#eee] font-bold text-gray-700"
           />
           <input
@@ -20,10 +37,13 @@ const Home = () => {
             name=""
             id=""
             placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="p-2 rounded-md outline-none border-none mb-3 text-sm bg-[#eee] font-bold text-gray-700"
           />
           <button
             type="button"
+            onClick={joinRoom}
             className="joinBtn border-none p-2 rounded-md text-sm cursor-pointer transition-all ease-in-out duration-200 bg-emerald-400 text-black font-bold ml-auto w-24 hover:bg-emerald-500"
           >
             Join
@@ -31,6 +51,7 @@ const Home = () => {
           <span className="mt-5 my-0 mx-auto">
             If you don't have an invite then create &nbsp;{" "}
             <a
+              onClick={createNewRoom}
               href=""
               className="text-emerald-400 decoration-none border-b-2 border-emerald-400 cursor-pointer transition-all ease-in-out duration-200 hover:text-emerald-500 hover:border-b-emerald-500"
             >
