@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import Logo from "../components/Logo";
 import { v4 as uuidV4 } from "uuid";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const nagivate = useNavigate();
+
   const [roomId, setRoomId] = useState("");
   const [username, setUsername] = useState("");
 
@@ -10,11 +14,27 @@ const Home = () => {
     e.preventDefault();
     const id = uuidV4();
     setRoomId(id);
+    toast.success("New room created!");
   };
 
   const joinRoom = () => {
-    // console.log(roomId);
-    // console.log(username);
+    if (!roomId || !username) {
+      toast.error("Room ID and username is required");
+      return;
+    }
+
+    // Redirect to editor page
+    nagivate(`/editor/${roomId}`, {
+      state: {
+        username,
+      },
+    });
+  };
+
+  const handleInputEnter = (e) => {
+    if (e.code === "Enter") {
+      joinRoom();
+    }
   };
 
   return (
@@ -28,6 +48,7 @@ const Home = () => {
             name=""
             id=""
             placeholder="Room ID"
+            onKeyUp={handleInputEnter}
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}
             className="p-2 rounded-md outline-none border-none mb-3 text-sm bg-[#eee] font-bold text-gray-700"
@@ -37,6 +58,7 @@ const Home = () => {
             name=""
             id=""
             placeholder="Username"
+            onKeyUp={handleInputEnter}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="p-2 rounded-md outline-none border-none mb-3 text-sm bg-[#eee] font-bold text-gray-700"
