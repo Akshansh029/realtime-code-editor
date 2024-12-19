@@ -66,16 +66,16 @@ const Home = () => {
           <button
             type="button"
             onClick={joinRoom}
-            className="joinBtn border-none p-2 rounded-md text-sm cursor-pointer transition-all ease-in-out duration-200 bg-emerald-400 text-black font-bold ml-auto w-24 hover:bg-emerald-500"
+            className="joinBtn border-none p-2 rounded-md text-sm cursor-pointer transition-all ease-in-out duration-200 bg-sky-400 text-black font-bold ml-auto w-24 hover:bg-sky-500"
           >
             Join
           </button>
-          <span className="mt-5 my-0 mx-auto">
-            If you don't have an invite then create &nbsp;{" "}
+          <span className="mt-5 my-0 mx-auto text-sm">
+            If you don't have an invite then create{" "}
             <a
               onClick={createNewRoom}
               href=""
-              className="text-emerald-400 decoration-none border-b-2 border-emerald-400 cursor-pointer transition-all ease-in-out duration-200 hover:text-emerald-500 hover:border-b-emerald-500"
+              className=" text-sky-400 decoration-none border-b-2 border-sky-400 cursor-pointer transition-all ease-in-out duration-200 hover:text-sky-500 hover:border-b-sky-500"
             >
               New Room
             </a>
@@ -88,7 +88,7 @@ const Home = () => {
           <a
             href="https://github.com/Akshansh029"
             target="_blank"
-            className="text-emerald-400 hover:text-emerald-500 underline"
+            className="text-sky-400 hover:text-sky-500 underline"
           >
             Akshansh
           </a>
