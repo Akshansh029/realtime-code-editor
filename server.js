@@ -12,7 +12,12 @@ const io = new Server(server);
 const userSocketMap = {};
 
 const getAllConnectedClients = (id) => {
-  Array.from(io.sockets.adapter.rooms.get(id)) || [];
+  return Array.from(io.sockets.adapter.rooms.get(id) || []).map((socketId) => {
+    return {
+      socketId,
+      username: userSocketMap[socketId],
+    };
+  }); // Map
 };
 
 //WebSocket connection
@@ -25,6 +30,13 @@ io.on("connection", (socket) => {
 
     // Get list of users present in the room
     const clients = getAllConnectedClients(roomId);
+    clients.forEach(({ socketId }) => {
+      io.to(socketId).emit(ACTIONS.JOINED, {
+        clients,
+        username,
+        socketId: socket.id,
+      });
+    });
   });
 });
 

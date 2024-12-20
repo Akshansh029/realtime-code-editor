@@ -23,6 +23,8 @@ const EditorPage = () => {
   const location = useLocation();
   const { roomId } = useParams();
   const reactNavigate = useNavigate();
+  const [clients, setClients] = useState([]);
+  const shownToasts = useRef(new Set());
 
   useEffect(() => {
     const init = async () => {
@@ -40,15 +42,38 @@ const EditorPage = () => {
         roomId,
         username: location.state?.username,
       });
+
+      // Listen for JOINED event
+      const onJoined = ({ clients, username, socketId }) => {
+        if (
+          username !== location.state?.username &&
+          !shownToasts.current.has(username)
+        ) {
+          toast.success(`${username} joined the room.`);
+          shownToasts.current.add(username);
+        }
+
+        // Ensure clients list has unique entries
+        const uniqueClients = clients.filter(
+          (client, index, self) =>
+            index === self.findIndex((c) => c.username === client.username)
+        );
+
+        setClients(uniqueClients); // Update state with unique clients
+      };
+
+      socketRef.current.on(ACTIONS.JOINED, onJoined);
+
+      // Cleanup event listeners on unmount
+      return () => {
+        socketRef.current.off(ACTIONS.JOINED, onJoined);
+        socketRef.current.disconnect();
+      };
     };
     init();
   }, []);
 
-  const [clients, setClients] = useState([
-    { socketId: 1, username: "Akshansh S" },
-    { socketId: 2, username: "Kanizah B" },
-    { socketId: 3, username: "Aditya K" },
-  ]);
+  console.log(clients);
 
   if (!location.state) {
     return <Navigate to="/" />;
