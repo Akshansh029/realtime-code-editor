@@ -6,18 +6,36 @@ import LanguageSelector from "../components/LanguageSelector";
 import { CODE_SNIPPETS } from "../constants";
 import FontSelector from "../components/FontSelector";
 import { initSocket } from "../socket";
-import ACTIONS from "../../Action";
-import { useLocation } from "react-router-dom";
+import ACTIONS from "../Action";
+import {
+  useLocation,
+  useNavigate,
+  Navigate,
+  useParams,
+} from "react-router-dom";
+import { toast } from "react-toastify";
 
 const EditorPage = () => {
+  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+  const [value, setValue] = useState("");
+  const [fontSize, setFontSize] = useState(14);
   const socketRef = useRef(null);
   const location = useLocation();
+  const { roomId } = useParams();
+  const reactNavigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
       socketRef.current = await initSocket();
       socketRef.current.on("connect_error", (err) => handleErrors(err));
       socketRef.current.on("connect_failed", (err) => handleErrors(err));
+
+      function handleErrors(e) {
+        console.log("socket error", e);
+        toast.error("Socket connected failed, try again later.");
+        reactNavigate("/");
+      }
+
       socketRef.current.emit(ACTIONS.JOIN, {
         roomId,
         username: location.state?.username,
@@ -32,9 +50,9 @@ const EditorPage = () => {
     { socketId: 3, username: "Aditya K" },
   ]);
 
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-  const [value, setValue] = useState("");
-  const [fontSize, setFontSize] = useState(14);
+  if (!location.state) {
+    return <Navigate to="/" />;
+  }
 
   // Language update
   const handleLanguageChange = (e) => {

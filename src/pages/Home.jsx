@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const nagivate = useNavigate();
-
   const [roomId, setRoomId] = useState("");
   const [username, setUsername] = useState("");
 
