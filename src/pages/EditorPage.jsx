@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Logo from "../components/Logo";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
+import CodeEditor from "../components/Editor";
+import LanguageSelector from "../components/LanguageSelector";
 
 const EditorPage = () => {
   const [clients, setClients] = useState([
@@ -37,8 +39,12 @@ const EditorPage = () => {
           Leave
         </button>
       </aside>
-      <div className="editor bg-red-500 w-full">
-        <Editor />
+      <div className="editor w-full">
+        <div className="w-full h-fit py-3 px-4 bg-primBg flex gap-2 items-center ">
+          <h2 className="text-base text-slate-400 font-medium ">Languages: </h2>
+          <LanguageSelector />
+        </div>
+        <CodeEditor />
       </div>
     </div>
   );
