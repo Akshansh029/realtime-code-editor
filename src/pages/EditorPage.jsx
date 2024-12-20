@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Logo from "../components/Logo";
 import Client from "../components/Client";
-import Editor from "../components/Editor";
 import CodeEditor from "../components/Editor";
 import LanguageSelector from "../components/LanguageSelector";
+import { CODE_SNIPPETS } from "../constants";
 
 const EditorPage = () => {
   const [clients, setClients] = useState([
@@ -11,6 +11,15 @@ const EditorPage = () => {
     { socketId: 2, username: "Kanizah B" },
     { socketId: 2, username: "Aditya K" },
   ]);
+
+  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+  const [value, setValue] = useState("");
+
+  const handleLanguageChange = (e) => {
+    const newLanguage = e.target.value;
+    setSelectedLanguage(newLanguage);
+    setValue(CODE_SNIPPETS[newLanguage]);
+  };
 
   return (
     <div className="w-full flex h-[100vh] ">
@@ -42,9 +51,16 @@ const EditorPage = () => {
       <div className="editor w-full">
         <div className="w-full h-fit py-3 px-4 bg-primBg flex gap-2 items-center ">
           <h2 className="text-base text-slate-400 font-medium ">Languages: </h2>
-          <LanguageSelector />
+          <LanguageSelector
+            selectedLanguage={selectedLanguage}
+            handleLanguageChange={handleLanguageChange}
+          />
         </div>
-        <CodeEditor />
+        <CodeEditor
+          selectedLanguage={selectedLanguage}
+          value={value}
+          setValue={setValue}
+        />
       </div>
     </div>
   );

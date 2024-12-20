@@ -1,15 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import Codemirror from "codemirror";
+import React, { useRef, useState } from "react";
 import "codemirror/mode/javascript/javascript";
 import "codemirror/theme/dracula.css";
 import "codemirror/addon/edit/closetag";
 import "codemirror/addon/edit/closebrackets";
 import Editor from "@monaco-editor/react";
 
-const CodeEditor = () => {
-  const [value, setvalue] = useState("");
+const CodeEditor = ({ selectedLanguage, value, setValue }) => {
   const editorRef = useRef(null);
-  useEffect(() => {}, []);
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -22,9 +19,9 @@ const CodeEditor = () => {
         height="100vh"
         theme="vs-dark"
         value={value}
-        onChange={(value) => setvalue(value)}
-        defaultLanguage="javascript"
-        defaultValue="// Write your code here..."
+        onChange={(value) => setValue(value)}
+        language={selectedLanguage}
+        defaultValue="// Write your code here"
         onMount={onMount}
       />
     </div>

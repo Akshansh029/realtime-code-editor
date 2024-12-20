@@ -1,26 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { LANGUAGE_VERSIONS } from "../constants";
 
-const LanguageSelector = () => {
-  const languageVersions = {
-    javascript: "18.15.0",
-    typescript: "5.0.3",
-    python: "3.10.0",
-    java: "15.0.2",
-    csharp: "6.12.0",
-    php: "8.2.3",
-  };
-
-  const languages = Object.entries(languageVersions);
-
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-
-  const handleLanguageChange = (e) => {
-    setSelectedLanguage(e.target.value);
-  };
-
-  //   useEffect(() => {
-  //     console.log(selectedLanguage);
-  //   }, [selectedLanguage]);
+const LanguageSelector = ({ selectedLanguage, handleLanguageChange }) => {
+  const languages = Object.entries(LANGUAGE_VERSIONS);
 
   return (
     <div className="relative w-60">
@@ -31,7 +13,7 @@ const LanguageSelector = () => {
       >
         {languages.map(([language, version]) => (
           <option key={language} value={language}>
-            {language.charAt(0).toUpperCase() + language.slice(1)} ({version})
+            {language} ({version})
           </option>
         ))}
       </select>
