@@ -1,4 +1,5 @@
 import React from "react";
+import { FONTSIZE } from "../constants";
 
 const FontSelector = ({ fontSize, handleFontSizeChange }) => {
   return (
@@ -9,7 +10,7 @@ const FontSelector = ({ fontSize, handleFontSizeChange }) => {
         onChange={handleFontSizeChange}
         className="px-2 py-2 text-sm text-white bg-formBg border border-gray-700 rounded-lg shadow-lg appearance-none focus:outline-none"
       >
-        {[12, 14, 16, 18, 20, 24, 28, 32].map((size) => (
+        {FONTSIZE.map((size) => (
           <option key={size} value={size}>
             {size}px
           </option>

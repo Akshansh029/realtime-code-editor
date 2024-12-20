@@ -1,12 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Logo from "../components/Logo";
 import Client from "../components/Client";
 import CodeEditor from "../components/Editor";
 import LanguageSelector from "../components/LanguageSelector";
 import { CODE_SNIPPETS } from "../constants";
 import FontSelector from "../components/FontSelector";
+import { initSocket } from "../socket";
+import ACTIONS from "../../Action";
+import { useLocation } from "react-router-dom";
 
 const EditorPage = () => {
+  const socketRef = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const init = async () => {
+      socketRef.current = await initSocket();
+      socketRef.current.on("connect_error", (err) => handleErrors(err));
+      socketRef.current.on("connect_failed", (err) => handleErrors(err));
+      socketRef.current.emit(ACTIONS.JOIN, {
+        roomId,
+        username: location.state?.username,
+      });
+    };
+    init();
+  }, []);
+
   const [clients, setClients] = useState([
     { socketId: 1, username: "Akshansh S" },
     { socketId: 2, username: "Kanizah B" },

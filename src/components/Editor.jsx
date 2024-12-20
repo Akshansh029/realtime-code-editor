@@ -14,21 +14,19 @@ const CodeEditor = ({ selectedLanguage, value, setValue, fontSize }) => {
   };
 
   return (
-    <div className="">
-      <Editor
-        height="100vh"
-        theme="vs-dark"
-        value={value}
-        onChange={(value) => setValue(value)}
-        language={selectedLanguage}
-        defaultValue="// Write your code here"
-        onMount={onMount}
-        options={{
-          fontSize,
-          minimap: { enabled: true },
-        }}
-      />
-    </div>
+    <Editor
+      height="100vh"
+      theme="vs-dark"
+      value={value}
+      onChange={(value) => setValue(value)}
+      language={selectedLanguage}
+      defaultValue="// Write your code here"
+      onMount={onMount}
+      options={{
+        fontSize,
+        minimap: { enabled: true },
+      }}
+    />
   );
 };
 
