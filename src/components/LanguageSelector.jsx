@@ -9,7 +9,7 @@ const LanguageSelector = ({ selectedLanguage, handleLanguageChange }) => {
       <select
         value={selectedLanguage}
         onChange={handleLanguageChange}
-        className="w-full px-2 py-2 text-sm text-white bg-formBg border border-gray-700 rounded-lg shadow-lg appearance-none focus:outline-none focus:ring-2 focus:"
+        className="w-full px-2 py-2 text-sm text-white bg-formBg border border-gray-700 rounded-lg shadow-lg appearance-none focus:outline-none"
       >
         {languages.map(([language, version]) => (
           <option key={language} value={language}>

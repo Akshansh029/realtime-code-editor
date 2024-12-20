@@ -4,21 +4,29 @@ import Client from "../components/Client";
 import CodeEditor from "../components/Editor";
 import LanguageSelector from "../components/LanguageSelector";
 import { CODE_SNIPPETS } from "../constants";
+import FontSelector from "../components/FontSelector";
 
 const EditorPage = () => {
   const [clients, setClients] = useState([
     { socketId: 1, username: "Akshansh S" },
     { socketId: 2, username: "Kanizah B" },
-    { socketId: 2, username: "Aditya K" },
+    { socketId: 3, username: "Aditya K" },
   ]);
 
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [value, setValue] = useState("");
+  const [fontSize, setFontSize] = useState(14);
 
+  // Language update
   const handleLanguageChange = (e) => {
     const newLanguage = e.target.value;
     setSelectedLanguage(newLanguage);
     setValue(CODE_SNIPPETS[newLanguage]);
+  };
+
+  // Font update
+  const handleFontSizeChange = (e) => {
+    setFontSize(Number(e.target.value));
   };
 
   return (
@@ -55,8 +63,14 @@ const EditorPage = () => {
             selectedLanguage={selectedLanguage}
             handleLanguageChange={handleLanguageChange}
           />
+          <h2 className="text-base text-slate-400 font-medium ">Font size: </h2>
+          <FontSelector
+            fontSize={fontSize}
+            handleFontSizeChange={handleFontSizeChange}
+          />
         </div>
         <CodeEditor
+          fontSize={fontSize}
           selectedLanguage={selectedLanguage}
           value={value}
           setValue={setValue}

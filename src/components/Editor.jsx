@@ -5,7 +5,7 @@ import "codemirror/addon/edit/closetag";
 import "codemirror/addon/edit/closebrackets";
 import Editor from "@monaco-editor/react";
 
-const CodeEditor = ({ selectedLanguage, value, setValue }) => {
+const CodeEditor = ({ selectedLanguage, value, setValue, fontSize }) => {
   const editorRef = useRef(null);
 
   const onMount = (editor) => {
@@ -23,6 +23,10 @@ const CodeEditor = ({ selectedLanguage, value, setValue }) => {
         language={selectedLanguage}
         defaultValue="// Write your code here"
         onMount={onMount}
+        options={{
+          fontSize,
+          minimap: { enabled: true },
+        }}
       />
     </div>
   );
