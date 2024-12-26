@@ -5,7 +5,7 @@ const LanguageSelector = ({ selectedLanguage, handleLanguageChange }) => {
   const languages = Object.entries(LANGUAGE_VERSIONS);
 
   return (
-    <div className="relative w-60">
+    <div className="relative w-44 ">
       <select
         value={selectedLanguage}
         onChange={handleLanguageChange}

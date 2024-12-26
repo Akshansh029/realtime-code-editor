@@ -22,9 +22,8 @@ const EditorPage = () => {
   const socketRef = useRef(null);
   const location = useLocation();
   const { roomId } = useParams();
-  const reactNavigate = useNavigate();
+  const reactNavigator = useNavigate();
   const [clients, setClients] = useState([]);
-  const shownToasts = useRef(new Set());
 
   useEffect(() => {
     const init = async () => {
@@ -34,8 +33,8 @@ const EditorPage = () => {
 
       function handleErrors(e) {
         console.log("socket error", e);
-        toast.error("Socket connected failed, try again later.");
-        reactNavigate("/");
+        toast.error("Socket connection failed, try again later.");
+        reactNavigator("/");
       }
 
       socketRef.current.emit(ACTIONS.JOIN, {
@@ -43,37 +42,35 @@ const EditorPage = () => {
         username: location.state?.username,
       });
 
-      // Listen for JOINED event
-      const onJoined = ({ clients, username, socketId }) => {
-        if (
-          username !== location.state?.username &&
-          !shownToasts.current.has(username)
-        ) {
-          toast.success(`${username} joined the room.`);
-          shownToasts.current.add(username);
+      // Listening for joined event
+      socketRef.current.on(
+        ACTIONS.JOINED,
+        ({ clients, username, socketId }) => {
+          if (username !== location.state?.username) {
+            toast.success(`${username} joined the room.`);
+            // console.log(`${username} joined`);
+          }
+          setClients(clients);
         }
+      );
 
-        // Ensure clients list has unique entries
-        const uniqueClients = clients.filter(
-          (client, index, self) =>
-            index === self.findIndex((c) => c.username === client.username)
-        );
-
-        setClients(uniqueClients); // Update state with unique clients
-      };
-
-      socketRef.current.on(ACTIONS.JOINED, onJoined);
-
-      // Cleanup event listeners on unmount
-      return () => {
-        socketRef.current.off(ACTIONS.JOINED, onJoined);
-        socketRef.current.disconnect();
-      };
+      // Listening for disconnected
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
+        toast.success(`${username} left the room.`);
+        setClients((prev) => {
+          return prev.filter((client) => client.socketId !== socketId);
+        });
+      });
     };
     init();
-  }, []);
-
-  console.log(clients);
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current.off(ACTIONS.JOINED);
+        socketRef.current.off(ACTIONS.DISCONNECTED);
+      }
+    };
+  }, [roomId]);
 
   if (!location.state) {
     return <Navigate to="/" />;
@@ -132,6 +129,8 @@ const EditorPage = () => {
           />
         </div>
         <CodeEditor
+          roomId={roomId}
+          socketRef={socketRef}
           fontSize={fontSize}
           selectedLanguage={selectedLanguage}
           value={value}
