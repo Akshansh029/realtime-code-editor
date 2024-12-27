@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "../components/Logo";
 import Client from "../components/Client";
-import CodeEditor from "../components/Editor";
 import LanguageSelector from "../components/LanguageSelector";
 import { CODE_SNIPPETS } from "../constants";
 import FontSelector from "../components/FontSelector";
@@ -14,12 +13,14 @@ import {
   useParams,
 } from "react-router-dom";
 import { toast } from "react-toastify";
+import Editor from "../components/Editor";
 
 const EditorPage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [value, setValue] = useState("");
   const [fontSize, setFontSize] = useState(14);
   const socketRef = useRef(null);
+  const codeRef = useRef(null);
   const location = useLocation();
   const { roomId } = useParams();
   const reactNavigator = useNavigate();
@@ -48,9 +49,13 @@ const EditorPage = () => {
         ({ clients, username, socketId }) => {
           if (username !== location.state?.username) {
             toast.success(`${username} joined the room.`);
-            // console.log(`${username} joined`);
+            console.log(`${username} joined`);
           }
           setClients(clients);
+          socketRef.current.emit(ACTIONS.SYNC_CODE, {
+            code: codeRef.current,
+            socketId,
+          });
         }
       );
 
@@ -64,13 +69,25 @@ const EditorPage = () => {
     };
     init();
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current.off(ACTIONS.JOINED);
-        socketRef.current.off(ACTIONS.DISCONNECTED);
-      }
+      // socketRef.current.disconnect();
+      // socketRef.current.off(ACTIONS.JOINED);
+      // socketRef.current.off(ACTIONS.DISCONNECTED);
     };
-  }, [roomId]);
+  }, []);
+
+  async function copyRoomId() {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      toast.success("Room ID has been copied to your clipboard");
+    } catch (err) {
+      toast.error("Could not copy the Room ID");
+      console.error(err);
+    }
+  }
+
+  const leaveRoom = () => {
+    reactNavigator("/");
+  };
 
   if (!location.state) {
     return <Navigate to="/" />;
@@ -105,12 +122,14 @@ const EditorPage = () => {
         <button
           type="button"
           className="border-none p-2 rounded-md text-sm cursor-pointer transition-all ease-in-out duration-200 bg-neutral-100 text-black font-bold mb-2 hover:bg-neutral-300"
+          onClick={copyRoomId}
         >
           Copy Room Id
         </button>
         <button
           type="button"
           className="border-none p-2 rounded-md text-sm cursor-pointer transition-all ease-in-out duration-200 bg-sky-400 text-black font-bold mb-2 hover:bg-sky-500"
+          onClick={leaveRoom}
         >
           Leave
         </button>
@@ -128,13 +147,20 @@ const EditorPage = () => {
             handleFontSizeChange={handleFontSizeChange}
           />
         </div>
-        <CodeEditor
+        {/* <Editor
           roomId={roomId}
           socketRef={socketRef}
           fontSize={fontSize}
           selectedLanguage={selectedLanguage}
           value={value}
           setValue={setValue}
+        /> */}
+        <Editor
+          socketRef={socketRef}
+          roomId={roomId}
+          onCodeChange={(code) => {
+            codeRef.current = code;
+          }}
         />
       </div>
     </div>

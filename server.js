@@ -35,13 +35,20 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
     });
+
+    // Send current code to new user
+    if (clients.length > 0) {
+      const existingSocket = clients[0].socketId;
+      socket
+        .to(existingSocket)
+        .emit(ACTIONS.SYNC_CODE, { socketId: socket.id });
+    }
   });
 
   socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
-    console.log(`Code change received from ${socket.id} for room ${roomId}`);
-    socket.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
+    socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
   });
-
+  // when new user join the room all the code which are there are also shows on that persons editor
   socket.on(ACTIONS.SYNC_CODE, ({ socketId, code }) => {
     io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
   });
