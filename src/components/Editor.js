@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import Codemirror from "codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
 import "codemirror/mode/javascript/javascript";
@@ -41,6 +40,12 @@ function Editor({ socketRef, roomId, onCodeChange }) {
     };
 
     init();
+    return () => {
+      // Cleanup CodeMirror instance when component unmounts
+      if (editorRef.current) {
+        editorRef.current.toTextArea();
+      }
+    };
   }, []);
 
   // data receive from server
@@ -52,9 +57,11 @@ function Editor({ socketRef, roomId, onCodeChange }) {
         }
       });
     }
-    // return () => {
-    //   socketRef.current.off(ACTIONS.CODE_CHANGE);
-    // };
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off(ACTIONS.CODE_CHANGE);
+      }
+    };
   }, [socketRef.current]);
 
   return (

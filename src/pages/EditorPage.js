@@ -69,9 +69,11 @@ const EditorPage = () => {
     };
     init();
     return () => {
-      // socketRef.current.disconnect();
-      // socketRef.current.off(ACTIONS.JOINED);
-      // socketRef.current.off(ACTIONS.DISCONNECTED);
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current.off(ACTIONS.JOINED);
+        socketRef.current.off(ACTIONS.DISCONNECTED);
+      }
     };
   }, []);
 
@@ -147,14 +149,6 @@ const EditorPage = () => {
             handleFontSizeChange={handleFontSizeChange}
           />
         </div>
-        {/* <Editor
-          roomId={roomId}
-          socketRef={socketRef}
-          fontSize={fontSize}
-          selectedLanguage={selectedLanguage}
-          value={value}
-          setValue={setValue}
-        /> */}
         <Editor
           socketRef={socketRef}
           roomId={roomId}
