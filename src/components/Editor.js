@@ -2,33 +2,39 @@ import React, { useEffect, useRef } from "react";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/dracula.css";
 import "codemirror/mode/javascript/javascript";
+import "codemirror/mode/python/python";
+import "codemirror/mode/php/php";
+import "codemirror/mode/go/go";
+import "codemirror/mode/xml/xml";
+import "codemirror/mode/htmlmixed/htmlmixed";
+import "codemirror/mode/css/css";
+import "codemirror/mode/markdown/markdown";
 import "codemirror/addon/edit/closetag";
 import "codemirror/addon/edit/closebrackets";
-import ACTIONS from "../Action";
 import CodeMirror from "codemirror";
+import ACTIONS from "../Action";
 
-function Editor({ socketRef, roomId, onCodeChange }) {
+function Editor({ socketRef, roomId, onCodeChange, language, fontSize }) {
   const editorRef = useRef(null);
+
   useEffect(() => {
     const init = async () => {
       const editor = CodeMirror.fromTextArea(
         document.getElementById("realtimeEditor"),
         {
-          mode: { name: "javascript", json: true },
+          mode: { name: language, json: true }, // Ensure the language passed is supported
           theme: "dracula",
           autoCloseTags: true,
           autoCloseBrackets: true,
           lineNumbers: true,
         }
       );
-      // for sync the code
       editorRef.current = editor;
 
       editor.setSize(null, "100%");
       editorRef.current.on("change", (instance, changes) => {
-        // console.log("changes", instance ,  changes );
         const { origin } = changes;
-        const code = instance.getValue(); // code has value which we write
+        const code = instance.getValue();
         onCodeChange(code);
         if (origin !== "setValue") {
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
@@ -41,14 +47,12 @@ function Editor({ socketRef, roomId, onCodeChange }) {
 
     init();
     return () => {
-      // Cleanup CodeMirror instance when component unmounts
       if (editorRef.current) {
         editorRef.current.toTextArea();
       }
     };
-  }, []);
+  }, [language]); // Reinitialize editor when language changes
 
-  // data receive from server
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
@@ -65,7 +69,7 @@ function Editor({ socketRef, roomId, onCodeChange }) {
   }, [socketRef.current]);
 
   return (
-    <div style={{ height: "600px" }}>
+    <div style={{ height: "600px", fontSize: fontSize }}>
       <textarea id="realtimeEditor"></textarea>
     </div>
   );

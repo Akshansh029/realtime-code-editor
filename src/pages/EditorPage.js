@@ -17,7 +17,6 @@ import Editor from "../components/Editor";
 
 const EditorPage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-  const [value, setValue] = useState("");
   const [fontSize, setFontSize] = useState(14);
   const socketRef = useRef(null);
   const codeRef = useRef(null);
@@ -99,7 +98,6 @@ const EditorPage = () => {
   const handleLanguageChange = (e) => {
     const newLanguage = e.target.value;
     setSelectedLanguage(newLanguage);
-    setValue(CODE_SNIPPETS[newLanguage]);
   };
 
   // Font update
@@ -155,6 +153,8 @@ const EditorPage = () => {
           onCodeChange={(code) => {
             codeRef.current = code;
           }}
+          language={selectedLanguage}
+          fontSize={fontSize}
         />
       </div>
     </div>
