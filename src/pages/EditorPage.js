@@ -151,18 +151,18 @@ const EditorPage = () => {
         </button>
       </aside>
       <div className="editor w-full">
-        <div className="w-full h-fit py-3 px-4 bg-primBg flex gap-2 items-center ">
-          <h2 className="text-base text-slate-400 font-medium ">Languages: </h2>
+        <div className="w-full h-[62px] py-3 px-4 bg-primBg flex gap-2 items-center ">
+          <h2 className="text-sm text-slate-400 font-medium ">Languages: </h2>
           <LanguageSelector
             selectedLanguage={selectedLanguage}
             handleLanguageChange={handleLanguageChange}
           />
-          <h2 className="text-base text-slate-400 font-medium ">Font size: </h2>
+          <h2 className="text-sm text-slate-400 font-medium ">Font size: </h2>
           <FontSelector
             fontSize={fontSize}
             handleFontSizeChange={handleFontSizeChange}
           />
-          <h2 className="text-base text-slate-400 font-medium ">Theme: </h2>
+          <h2 className="text-sm text-slate-400 font-medium ">Theme: </h2>
           <ThemeSelector theme={theme} handleThemeChange={handleThemeUpdate} />
         </div>
         <Editor
