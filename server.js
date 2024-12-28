@@ -35,14 +35,6 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
     });
-
-    // Send current code to new user
-    if (clients.length > 0) {
-      const existingSocket = clients[0].socketId;
-      socket
-        .to(existingSocket)
-        .emit(ACTIONS.SYNC_CODE, { socketId: socket.id });
-    }
   });
 
   socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {

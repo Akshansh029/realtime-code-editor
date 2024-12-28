@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Logo from "../components/Logo";
 import Client from "../components/Client";
 import LanguageSelector from "../components/LanguageSelector";
-import { CODE_SNIPPETS } from "../constants";
 import FontSelector from "../components/FontSelector";
 import { initSocket } from "../socket";
 import ACTIONS from "../Action";
@@ -14,10 +13,12 @@ import {
 } from "react-router-dom";
 import { toast } from "react-toastify";
 import Editor from "../components/Editor";
+import ThemeSelector from "../components/ThemeSelector";
 
 const EditorPage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [fontSize, setFontSize] = useState(14);
+  const [theme, setTheme] = useState("dracula");
   const socketRef = useRef(null);
   const codeRef = useRef(null);
   const location = useLocation();
@@ -27,51 +28,60 @@ const EditorPage = () => {
 
   useEffect(() => {
     const init = async () => {
-      socketRef.current = await initSocket();
-      socketRef.current.on("connect_error", (err) => handleErrors(err));
-      socketRef.current.on("connect_failed", (err) => handleErrors(err));
+      if (!socketRef.current) {
+        socketRef.current = await initSocket();
+        // Event listeners
+        socketRef.current.on("connect_error", (err) => handleErrors(err));
+        socketRef.current.on("connect_failed", (err) => handleErrors(err));
 
-      function handleErrors(e) {
-        console.log("socket error", e);
-        toast.error("Socket connection failed, try again later.");
-        reactNavigator("/");
-      }
-
-      socketRef.current.emit(ACTIONS.JOIN, {
-        roomId,
-        username: location.state?.username,
-      });
-
-      // Listening for joined event
-      socketRef.current.on(
-        ACTIONS.JOINED,
-        ({ clients, username, socketId }) => {
-          if (username !== location.state?.username) {
-            toast.success(`${username} joined the room.`);
-            console.log(`${username} joined`);
-          }
-          setClients(clients);
-          socketRef.current.emit(ACTIONS.SYNC_CODE, {
-            code: codeRef.current,
-            socketId,
-          });
+        function handleErrors(e) {
+          console.log("socket error", e);
+          toast.error("Socket connection failed, try again later.");
+          reactNavigator("/");
         }
-      );
 
-      // Listening for disconnected
-      socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
-        toast.success(`${username} left the room.`);
-        setClients((prev) => {
-          return prev.filter((client) => client.socketId !== socketId);
+        socketRef.current.emit(ACTIONS.JOIN, {
+          roomId,
+          username: location.state?.username,
         });
-      });
+
+        // Listening for joined event
+        socketRef.current.on(
+          ACTIONS.JOINED,
+          ({ clients, username, socketId }) => {
+            if (username !== location.state?.username) {
+              toast.success(`${username} joined the room.`);
+            }
+            setClients(clients);
+            socketRef.current.emit(ACTIONS.SYNC_CODE, {
+              code: codeRef.current,
+              socketId,
+            });
+          }
+        );
+
+        // Listening for disconnected
+        socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
+          toast.success(`${username} left the room.`);
+          setClients((prev) => {
+            return prev.filter((client) => client.socketId !== socketId);
+          });
+        });
+      }
     };
+
     init();
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current.off(ACTIONS.JOINED);
         socketRef.current.off(ACTIONS.DISCONNECTED);
+      }
+    };
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
   }, []);
@@ -103,6 +113,12 @@ const EditorPage = () => {
   // Font update
   const handleFontSizeChange = (e) => {
     setFontSize(Number(e.target.value));
+  };
+
+  // Theme update
+  const handleThemeUpdate = (e) => {
+    const newTheme = e.target.value;
+    setTheme(newTheme);
   };
 
   return (
@@ -146,6 +162,8 @@ const EditorPage = () => {
             fontSize={fontSize}
             handleFontSizeChange={handleFontSizeChange}
           />
+          <h2 className="text-base text-slate-400 font-medium ">Theme: </h2>
+          <ThemeSelector theme={theme} handleThemeChange={handleThemeUpdate} />
         </div>
         <Editor
           socketRef={socketRef}
@@ -155,6 +173,7 @@ const EditorPage = () => {
           }}
           language={selectedLanguage}
           fontSize={fontSize}
+          theme={theme}
         />
       </div>
     </div>

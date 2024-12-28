@@ -10,3 +10,28 @@ export const LANGUAGE_VERSIONS = {
 };
 
 export const FONTSIZE = [12, 14, 16, 18, 20, 24, 28, 32];
+
+export const THEMES = [
+  "dracula",
+  "darcula",
+  "monokai",
+  "material",
+  "material-ocean",
+  "gruvbox-dark",
+  "elegant",
+  "moxer",
+  "nord",
+  "eclipse",
+  "cobalt",
+  "twilight",
+  "oceanic-next",
+  "seti",
+  "railscasts",
+  "lucario",
+  "panda-syntax",
+  "base16-dark",
+  "base16-light",
+  "ambiance",
+  "tomorrow-night-bright",
+  "zenburn",
+];
