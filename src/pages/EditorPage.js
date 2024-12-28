@@ -29,30 +29,35 @@ const EditorPage = () => {
   useEffect(() => {
     const init = async () => {
       if (!socketRef.current) {
+        // Initialize the socket connection
         socketRef.current = await initSocket();
-        // Event listeners
-        socketRef.current.on("connect_error", (err) => handleErrors(err));
-        socketRef.current.on("connect_failed", (err) => handleErrors(err));
 
-        function handleErrors(e) {
-          console.log("socket error", e);
-          toast.error("Socket connection failed, try again later.");
+        // Handle errors
+        const handleErrors = (e) => {
+          console.error("Socket error:", e);
+          toast.error("Socket connection failed. Please try again later.");
           reactNavigator("/");
-        }
+        };
 
+        socketRef.current.on("connect_error", handleErrors);
+        socketRef.current.on("connect_failed", handleErrors);
+
+        // Emit JOIN event
         socketRef.current.emit(ACTIONS.JOIN, {
           roomId,
           username: location.state?.username,
         });
 
-        // Listening for joined event
+        // Listen for JOINED event
         socketRef.current.on(
           ACTIONS.JOINED,
           ({ clients, username, socketId }) => {
             if (username !== location.state?.username) {
-              toast.success(`${username} joined the room.`);
+              toast.info(`${username} joined the room.`);
             }
             setClients(clients);
+
+            // Sync code
             socketRef.current.emit(ACTIONS.SYNC_CODE, {
               code: codeRef.current,
               socketId,
@@ -60,31 +65,28 @@ const EditorPage = () => {
           }
         );
 
-        // Listening for disconnected
+        // Listen for DISCONNECTED event
         socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
-          toast.success(`${username} left the room.`);
-          setClients((prev) => {
-            return prev.filter((client) => client.socketId !== socketId);
-          });
+          toast.info(`${username} left the room.`);
+          setClients((prev) =>
+            prev.filter((client) => client.socketId !== socketId)
+          );
         });
       }
     };
 
     init();
+
     return () => {
+      // Cleanup on component unmount
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current.off(ACTIONS.JOINED);
         socketRef.current.off(ACTIONS.DISCONNECTED);
-      }
-    };
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
         socketRef.current = null;
       }
     };
-  }, []);
+  }, [roomId, location.state?.username, reactNavigator]);
 
   async function copyRoomId() {
     try {
@@ -120,6 +122,8 @@ const EditorPage = () => {
     const newTheme = e.target.value;
     setTheme(newTheme);
   };
+
+  console.log(clients);
 
   return (
     <div className="w-full flex h-[100vh] ">
