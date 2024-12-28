@@ -123,8 +123,6 @@ const EditorPage = () => {
     setTheme(newTheme);
   };
 
-  console.table(clients);
-
   return (
     <div className="w-full flex h-[100vh] ">
       <aside className="bar w-[25%] bg-primBg p-4 text-white flex flex-col">
