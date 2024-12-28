@@ -39,8 +39,8 @@ const EditorPage = () => {
           reactNavigator("/");
         };
 
-        socketRef.current.on("connect_error", handleErrors);
-        socketRef.current.on("connect_failed", handleErrors);
+        socketRef.current.on("connect_error", (err) => handleErrors(err));
+        socketRef.current.on("connect_failed", (err) => handleErrors(err));
 
         // Emit JOIN event
         socketRef.current.emit(ACTIONS.JOIN, {
@@ -68,9 +68,9 @@ const EditorPage = () => {
         // Listen for DISCONNECTED event
         socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
           toast.info(`${username} left the room.`);
-          setClients((prev) =>
-            prev.filter((client) => client.socketId !== socketId)
-          );
+          setClients((prev) => {
+            return prev.filter((client) => client.socketId !== socketId);
+          });
         });
       }
     };
@@ -86,7 +86,7 @@ const EditorPage = () => {
         socketRef.current = null;
       }
     };
-  }, [roomId, location.state?.username, reactNavigator]);
+  }, []);
 
   async function copyRoomId() {
     try {
@@ -123,7 +123,7 @@ const EditorPage = () => {
     setTheme(newTheme);
   };
 
-  console.log(clients);
+  console.table(clients);
 
   return (
     <div className="w-full flex h-[100vh] ">
